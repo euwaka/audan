@@ -14,7 +14,12 @@ TARGET    := build/audan
 CFLAGS := -Wall -Wpedantic -Wextra -std=c17 -ggdb
 CLIBS  := -L$(VENDOR_LIB_DIR) -lm -lraylib 
 
-.PHONY: all run build clean vendor
+.PHONY: all run build clean vendor build_docs
+
+build_docs:
+	@echo "Building docs.pdf in build/docs/..."
+	@mkdir -p build/docs/
+	@pdflatex -output-directory="build/docs/" docs/main.tex
 
 vendor: raylib 
 	@echo "Vendor is built..."

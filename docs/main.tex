@@ -1,0 +1,106 @@
+\documentclass{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm, mathrsfs}
+\usepackage{hyperref}
+
+\begin{document}
+
+\section{DFT Notes}
+Artur notes.
+
+Wikipedia: \url{https://en.wikipedia.org/wiki/Sampling_(signal_processing)#Sampling_rate}
+
+\textbf{Sampling}: a reduction of a continuous-time signal to a discrete-time signal. Samples are taken by a sampler at some sampling interval $T$. Sampling rate is defined as $f_s = \frac{1}{T}$, and represents an averate number of samples taken per unit time. After $n$ samples, the original continuous signal $s(t)$ is given by the sequence ${s(nT)}$.
+
+
+
+Wikipedia: \url{https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem}
+
+\textbf{Nyquist-Shannon theorem}: if a signal $x(t)$ contains no frequencies higher than $B$ hertz, then it can be completely determined from its ordinates at a sequence of points spaced less than $\frac{1}{2B}$ seconds apart. $f_s/2$ is called the Nyquist frequency, and the threshold $2B$ is called the Nyquist rate. 
+
+Stanford book:
+
+Let $f(t)$ be $0$ outside of $0 \le t \le L$, and $\mathscr{F}{f(s)}$ be $0$ outside of $0 < s < 2B$. Also, let $L, B \in \mathbb{Z}$.
+By the sampling theorem, $f(t)$ must be sampled at sampling interval $T = \frac{1}{2B}$ to avoid aliasing during reconstruction. Since, the range of the signal is $L$, we need $N = 2BL$ evenly spaced samples, at the points:
+\begin{equation}
+    t_0 = 0; t_1 = \frac{1}{2B}; t_2 = \frac{2}{2B}; ...; t_{N-1} = \frac{N-1}{2B}
+\end{equation}
+
+Then, the discrete signal becomes
+\begin{equation}
+    f_{discrete}(t) = f(t) \sum_{n=0}^{N-1} \delta(t-t_n) = \sum_{n=0}^{N-1} f(t_n) \delta(t-t_n)
+\end{equation}
+Taking the Fourier transform, we get the continuous Fourier transform of the discritized signal $f(t)$:
+\begin{equation}
+    \mathscr{F}f_{discrete} (s) = \mathscr{F} \sum_{n=0}^{N-1} f(t_n) \delta(t-t_n) = \sum_{n=0}^{N-1} f(t_n) \mathscr{F} \delta(t-t_n) = \sum_{n=0}^{N-1} f(t_n) e^{-2\pi ist_n}
+\end{equation} 
+
+However, this is still continuous form of the Fourier transform, whilst we need to obtain a discrete Fourier transform (DFT). Thus, we have to discritize $\mathscr{F}f_{discrete}(s)$. Since $f(t)$ is defined on $0 \le t \le L$ in the time-domain, the sampling theorem states that the Fourier transform must be sampled at the sampling interval\footnote{Since $f(t)$ can be shifted to the interval $-L/2 \le t \le L/2$} $T=1/L$. The range of the Fourier transform is $2B$, so the points are sampled at:
+\begin{equation}
+    s_0 = 0; s_1 = \frac{1}{L}; s_2 = \frac{2}{L}; ...; s_{N-1} = \frac{N-1}{L}
+\end{equation}
+
+Let $F = \mathscr{F}f_{discrete}$, so the discrete Fourier transform (DFT) is given fully described by:
+
+\begin{equation}
+    F(s_{m}) = \sum_{n=0}^{N-1} f(t_n) e^{-2\pi i s_m t_n} \xrightarrow{ t_n = \frac{n}{2B}, s_m = \frac{m}{L} } F(s_{m}) = \sum_{n=0}^{N-1} f(t_n) e^{-2\pi inm/N}
+\end{equation}
+
+Now, treat the discrete signal $f(t)$ at an N-tuple $\mathbf{f} = \left( \mathbf{f}[0], \mathbf{f}[1], \cdots, \mathbf{f}[N-1] \right)$. The corresponding DFT\footnote{Note that both the signal and its transform have the same number of points $N$.} is also an N-tuple $\mathbf{F} = \left( \mathbf{F}[0], \mathbf{F}[1], \cdots, \mathbf{F}[N-1] \right)$. Then, by definition (i.e. as derived above) 
+
+\begin{equation}
+    \mathbf{F}[m] = \sum_{n=0}^{N-1} \mathbf{f}[n] e^{-2\pi imn/N}
+\end{equation}
+
+Let $\omega_N = e^{2\pi i / N}$ and sometimes we will use just $\omega$. Note that $\omega_N$ has $N$ distinct $N$-th roots of unity. That is, for every $p \in \left[0:N-1\right]$, $(\omega_N^p)^{N} = e^{2\pi i p N / N} = e^{2\pi ip} = 1$. Denote $\boldsymbol{\omega} = \left( 1, \omega, \omega^2, \cdots, \omega^{N-1} \right)$. Then,
+
+\begin{equation}
+    \underline{\mathscr{F}} \mathbf{f} = \sum_{n=0}^{N-1} \mathbf{f}[n] \odot \boldsymbol{\omega}^{-n} 
+\end{equation}
+
+which can be verified by expanding the vector notation into its individual components.
+
+Since $\underline{\mathscr{F}}$ is a linear operator, it can be represented as an $N\times N$ matrix. To derive this matrix, consider $\underline{\mathscr{F}}\mathbf{f}[m]$:
+\begin{equation}
+    \underline{\mathscr{F}}\mathbf{f}[m] = \sum_{n=0}^{N-1} \left( \mathbf{f}[n] \odot \boldsymbol{\omega}^{-n} \right) [m] = \sum_{n=0}^{N-1} \mathbf{f}[n] \omega^{-nm} = \mathbf{f}[0] + \mathbf{f}[1] \omega^{-m} + \mathbf{f}[2] \omega^{-2m} + \cdots + \mathbf{f}[N-1] \omega^{-m(N-1)} 
+\end{equation}
+
+Therefore,
+
+\begin{equation}
+    \begin{pmatrix}
+        \underline{\mathscr{F}}\mathbf{f}[0] \\     
+        \underline{\mathscr{F}}\mathbf{f}[1] \\     
+        \underline{\mathscr{F}}\mathbf{f}[2] \\    
+        \cdots \\
+        \underline{\mathscr{F}}\mathbf{f}[N-1]  
+    \end{pmatrix} = 
+    \begin{pmatrix}
+        1 & 1 & 1 & \cdots & 1 \\
+        1 & \omega^{-1} & \omega^{-2} & \cdots & \omega^{-(N-1)} \\
+        1 & \omega^{-2} & \omega^{-4} & \cdots & \omega^{-2(N-1)} \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        1 & \omega^{-(N-1)} & \omega^{-2(N-1)} & \cdots & \omega^{-(N-1)^2}
+    \end{pmatrix}  
+    \begin{pmatrix}
+        \mathbf{f}[0] \\    
+        \mathbf{f}[1] \\    
+        \mathbf{f}[2] \\    
+        \cdots \\
+        \mathbf{f}[N-1]    
+    \end{pmatrix}  
+\end{equation}
+
+So, DFT is:
+\begin{equation}
+    \underline{\mathscr{F}} = 
+    \begin{pmatrix}
+        1 & 1 & 1 & \cdots & 1 \\
+        1 & \omega^{-1} & \omega^{-2} & \cdots & \omega^{-(N-1)} \\
+        1 & \omega^{-2} & \omega^{-4} & \cdots & \omega^{-2(N-1)} \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        1 & \omega^{-(N-1)} & \omega^{-2(N-1)} & \cdots & \omega^{-(N-1)^2}
+    \end{pmatrix}  
+\end{equation}
+
+\end{document}
